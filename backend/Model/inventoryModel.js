@@ -8,8 +8,12 @@ const itemSchema = mongoose.Schema(
       required: true,
     },
     quantity: {
-      type: String,
+      type: Number,
       required: true,
+    },
+    unit: {
+      type: String,
+      require: true,
     },
   },
   {

@@ -19,31 +19,55 @@ const getAllInventory = asyncHandler(async (req, res) => {
 //pOSt
 const addGrocery = asyncHandler(async (req, res) => {
   try {
-    const { name, quantity } = req.body;
-    const grocery = new Inventory({ name, quantity });
-    await grocery.save();
-    res.status(201).json(grocery);
+    const { name, quantity, unit } = req.body;
+    if (!name && !quantity && !unit) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "The request body is missing or empty.",
+      });
+    }
+    if (!name || !quantity || !unit) {
+      return res.status(400).json({ error: "Please Fill all the feilds" });
+    } else {
+      const grocery = new Inventory({ name, quantity, unit });
+      await grocery.save();
+      res.status(201).json(grocery);
+    }
   } catch (error) {
     console.error("Error adding grocery:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(404).json({ error: "Internal Server Error" });
   }
 });
 
 //update
 const updateGrocery = asyncHandler(async (req, res) => {
-  const { name, quantity } = req.body;
+  const { name, quantity, unit } = req.body;
   console.log("new");
   console.log("id-->", req.params.id);
 
   try {
-    const grocery = await Inventory.findById(req.params.id);
+    const grocery = await Inventory.findById(req.params.id).catch((error) => {
+      console.error("Error finding grocery by ID:", error);
+      res.status(404).json({ error: "Invalid Id" });
+    });
 
     if (!grocery) {
-      return res.status(404).json({ error: "Grocery item not found" });
+      res.status(404).json({ error: "grocery not found" });
+    }
+
+    if (!name && !quantity && !unit) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: "The request body is missing or empty.",
+      });
+    }
+    if (!name || !quantity || !unit) {
+      return res.status(400).json({ error: "Please Fill all the feilds" });
     }
     if (grocery) {
       grocery.name = name;
       grocery.quantity = quantity;
+      grocery.unit = unit;
       const updatedGrocery = await grocery.save();
       res.status(200).json(updatedGrocery);
     }
@@ -51,6 +75,7 @@ const updateGrocery = asyncHandler(async (req, res) => {
     // res.json(grocery);
   } catch (error) {
     console.error("Error updating grocery:", error);
+
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -58,6 +83,11 @@ const updateGrocery = asyncHandler(async (req, res) => {
 const deleteGrocery = asyncHandler(async (req, res) => {
   console.log("id-->", req.params.id);
   try {
+    const grocery = await Inventory.findById(req.params.id).catch((error) => {
+      console.error("Error finding grocery by ID:", error);
+      res.status(404).json({ error: "Invalid Id" });
+    });
+
     const deletedGrocery = await Inventory.deleteOne({ _id: req.params.id });
     console.log("idsss-->", deletedGrocery);
 

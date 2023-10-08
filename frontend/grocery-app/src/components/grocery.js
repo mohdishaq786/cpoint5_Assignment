@@ -10,8 +10,8 @@ import {
   Modal,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import backGround from "../images/backgroud.png";
-import FilterAction from "../Utility/FilterAction";
+import backGround from "../images/backgrounds.png";
+import FilterAction from "../Utility/filterAction";
 import LoadingSpinner from "./spinner";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -24,6 +24,7 @@ class Grocery extends React.Component {
       _id: "",
       name: "",
       quantity: "",
+      unit: "",
       groceries: [],
       isModalOpen: false,
       isEditing: false,
@@ -34,11 +35,12 @@ class Grocery extends React.Component {
     };
     this.renderGroceryCard = this.renderGroceryCard.bind(this);
   }
-
+  //lifecyle method
   componentDidMount() {
     this.loadGroceries();
   }
-
+  //api calls from ui using superagent
+  //GET CALL
   loadGroceries = () => {
     this.setState({ isLoading: true });
     request
@@ -60,45 +62,22 @@ class Grocery extends React.Component {
         this.setState({ isLoading: false });
       });
   };
-
-  openAddModal = () => {
-    this.setState({
-      isModalOpen: true,
-      isEditing: false,
-      name: "",
-      quantity: "",
-    });
-  };
-
-  openEditModal = (item) => {
-    this.setState({
-      isModalOpen: true,
-      isEditing: true,
-      _id: item._id,
-      name: item.name,
-      quantity: item.quantity,
-    });
-  };
-
-  closeModal = () => {
-    this.setState({ isModalOpen: false });
-  };
-
+  //post call
   handleAddItem = (e) => {
     e.preventDefault();
-    const { name, quantity } = this.state;
+    const { name, quantity, unit } = this.state;
     this.setState({ isLoading: true });
     request
       .post(url + "/grocery/addGrocery")
       .set("Content-Type", "application/json")
-      .send({ name, quantity })
+      .send({ name, quantity, unit })
       .then((response) => {
         if (response.body.error) {
           toast.error(response.body.error);
         } else {
           this.loadGroceries();
           this.closeModal();
-          this.setState({ name: "", quantity: "" });
+          this.setState({ name: "", quantity: "", unit: " " });
           toast.success("Item added successfully");
         }
         this.setState({ isLoading: false });
@@ -109,22 +88,22 @@ class Grocery extends React.Component {
         this.setState({ isLoading: false });
       });
   };
-
+  //update call
   handleUpdateItem = (e) => {
     e.preventDefault();
-    const { _id, name, quantity } = this.state;
+    const { _id, name, quantity, unit } = this.state;
     this.setState({ isLoading: true });
     request
       .put(url + `/grocery/${_id}`)
       .set("Content-Type", "application/json")
-      .send({ name, quantity })
+      .send({ name, quantity, unit })
       .then((response) => {
         if (response.body.error) {
           toast.error(response.body.error);
         } else {
           this.loadGroceries();
           this.closeModal();
-          this.setState({ _id: "", name: "", quantity: "" });
+          this.setState({ _id: "", name: "", quantity: "", unit: " " });
           toast.success("Item updated successfully");
         }
         this.setState({ isLoading: false });
@@ -135,7 +114,7 @@ class Grocery extends React.Component {
         this.setState({ isLoading: false });
       });
   };
-
+  //delet calll
   handleDeleteItem = (idToDelete) => {
     this.setState({ isLoading: true });
     request
@@ -156,6 +135,34 @@ class Grocery extends React.Component {
         this.setState({ isLoading: false });
       });
   };
+  //api calls from ui using superagent
+
+  //modal code for add and edit inventory
+  openAddModal = () => {
+    this.setState({
+      isModalOpen: true,
+      isEditing: false,
+      name: "",
+      quantity: "",
+      unit: "",
+    });
+  };
+
+  openEditModal = (item) => {
+    this.setState({
+      isModalOpen: true,
+      isEditing: true,
+      _id: item._id,
+      name: item.name,
+      quantity: item.quantity,
+      unit: item.unit,
+    });
+  };
+
+  closeModal = () => {
+    this.setState({ isModalOpen: false });
+  };
+  ////modal code for add and edit inventory
 
   confirmDelete = (item) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
@@ -166,7 +173,8 @@ class Grocery extends React.Component {
   handleSearchChange = (e) => {
     this.setState({ search: e.target.value });
   };
-
+  //
+  //card render logic
   renderGroceryCard(item) {
     const { search } = this.state;
 
@@ -183,6 +191,14 @@ class Grocery extends React.Component {
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
             borderRadius: "10px",
             transition: "transform 0.2s",
+            cursor: "pointer",
+            backgroundColor: "#fff", // Initial background color
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#bbb"; // Change background color on hover
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "#fff"; // Reset background color on mouse leave
           }}
         >
           <Card.Img
@@ -205,7 +221,7 @@ class Grocery extends React.Component {
               {item.name}
             </Card.Title>
             <Card.Text style={{ fontSize: "14px" }}>
-              Quantity: {item.quantity}
+              Quantity: {item.quantity} {item.unit}
             </Card.Text>
             <div className="d-flex justify-content-between align-items-center">
               <Button
@@ -252,18 +268,38 @@ class Grocery extends React.Component {
           autoClose={5000}
           hideProgressBar={false}
         />
-        <Row style={styles.spaceBetween}>
-          <Col xs={12} sm={6} md={6} lg={12} xl={6}>
+        <Row style={{ justifyContent: "space-between" }}>
+          <Col
+            xs={12}
+            sm={6}
+            md={6}
+            lg={12}
+            xl={6}
+            style={{ marginBottom: 10 }}
+          >
             <Form.Group>
               <Form.Control
                 type="text"
                 placeholder="Search"
                 value={search}
                 onChange={this.handleSearchChange}
+                style={{
+                  border: "1px solid #ccc",
+                  borderRadius: "0.25rem",
+                  padding: "0.25rem",
+                  width: "50%",
+                }}
               />
             </Form.Group>
           </Col>
-          <Col xs={12} sm={6} md={6} lg={6} xl={6} style={{ marginBottom: 10 }}>
+          <Col
+            xs={12}
+            sm={6}
+            md={6}
+            lg={6}
+            xl={6}
+            style={{ marginBottom: 10, textAlign: "right" }}
+          >
             <Button onClick={this.openAddModal}>Add Item</Button>
           </Col>
         </Row>
@@ -307,6 +343,20 @@ class Grocery extends React.Component {
                   required
                 />
               </Form.Group>
+              <Form.Label>Measurement Unit:</Form.Label>
+              <Form.Control
+                as="select"
+                value={this.state.unit}
+                onChange={(e) => this.setState({ unit: e.target.value })}
+                required
+              >
+                <option value="">Select Unit</option>
+                <option value="lbs">lbs</option>
+                <option value="kg">kg</option>
+                <option value="pcs">pcs</option>
+                <option value="litres">litres</option>
+                {/* Add more options as needed */}
+              </Form.Control>
               <Button style={{ marginTop: 10 }} type="submit">
                 {this.state.isEditing ? "Save Changes" : "Add Item"}
               </Button>
