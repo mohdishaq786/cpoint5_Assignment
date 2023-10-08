@@ -242,7 +242,7 @@ class Grocery extends React.Component {
 
   render() {
     const { search, groceries, isLoading } = this.state;
-    debugger;
+    
     // const filteredGroceries = this.state.groceries.filter((item) =>
     //   item?.name?.toLowerCase().includes(search.toLowerCase())
     // );
@@ -337,7 +337,7 @@ class Grocery extends React.Component {
               <Form.Group>
                 <Form.Label>Quantity:</Form.Label>
                 <Form.Control
-                  type="text"
+                  type="number"
                   value={this.state.quantity}
                   onChange={(e) => this.setState({ quantity: e.target.value })}
                   required
