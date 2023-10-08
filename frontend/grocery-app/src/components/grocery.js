@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import backGround from "../images/backgrounds.png";
-import FilterAction from "../Utility/filterAction";
+import FilterAction from "../Utility/filterAction.js";
 import LoadingSpinner from "./spinner";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
