@@ -29,6 +29,7 @@ Clone the repository
 After cloning the repository, navigate to the root directory and run:
 
 `npm install`
+ navigate to `cpoint5_Assigment/fontend/grocery-app` & run this `npm install react-scripts --save`
 
 This will also install frontend dependencies thanks to the postinstall script.
 
@@ -45,7 +46,7 @@ Use environment variables (recommended). Set MONGO_URI in your environment, or c
 ## Running the application
 After setting up the database connection, you can start both the backend and frontend with:
 
-## `npm run dev`
+ `npm run dev`
 
 The backend will start, by default, on port 5000, and the frontend will be available on port 3000.
 
@@ -66,7 +67,7 @@ The backend will start, by default, on port 5000, and the frontend will be avail
 
 ## Test Api endpoints with Postman
 - First start backend sever `npm start`
-- URl for #`http://localhost:5000/api/ `
+- URL for #`http://localhost:5000/api/ `
 - Fetch -> # `http://localhost:5000/api/grocery`
 - Add- > # `http://localhost:5000/api/grocery/addGrocery`
 - Update -> #`http://localhost:5000/api/grocery/id`
@@ -77,19 +78,19 @@ The backend will start, by default, on port 5000, and the frontend will be avail
 
 # landing Page
 
-![Alt Text](page.png){width=250px height=150px}
+![Alt Text](page.png)
 
 # Add Modal
 
-<img src="addIitem.png" alt="Alt Text" width="512" height="250">
+<img src="addIitem.png" >
 
 # Edit Modal
 
-<img src="edit.png" alt="Alt Text" width="512" height="250">
+<img src="edit.png" >
 
 # Feedback of API responses
 
-<img src="toastmsg.png" alt="Alt Text" width="512" height="250">
+<img src="toastmsg.png" >
 
 
 
