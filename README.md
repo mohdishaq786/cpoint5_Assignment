@@ -50,6 +50,8 @@ After setting up the database connection, you can start both the backend and fro
 
 The backend will start, by default, on port 5000, and the frontend will be available on port 3000.
 
+- go to this url to use interface (http://localhost:3000)
+
 ## Features
 
 - Add Grocery Item: Allows users to add new grocery items to the inventory.
