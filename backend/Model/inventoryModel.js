@@ -15,6 +15,11 @@ const itemSchema = mongoose.Schema(
       type: String,
       require: true,
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
   },
   {
     timestamps: true,

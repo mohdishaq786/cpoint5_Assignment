@@ -8,7 +8,7 @@ const Inventory = require("../Model/inventoryModel");
 const getAllInventory = asyncHandler(async (req, res) => {
   console.log("reach here->>");
   try {
-    const groceries = await Inventory.find();
+    const groceries = await Inventory.find({ user: req.user._id });
     res.json(groceries);
   } catch (error) {
     console.error("Error fetching groceries:", error);
@@ -29,7 +29,12 @@ const addGrocery = asyncHandler(async (req, res) => {
     if (!name || !quantity || !unit) {
       return res.status(400).json({ error: "Please Fill all the feilds" });
     } else {
-      const grocery = new Inventory({ name, quantity, unit });
+      const grocery = new Inventory({
+        user: req.user._id,
+        name,
+        quantity,
+        unit,
+      });
       await grocery.save();
       res.status(201).json(grocery);
     }
@@ -50,7 +55,9 @@ const updateGrocery = asyncHandler(async (req, res) => {
       console.error("Error finding grocery by ID:", error);
       res.status(404).json({ error: "Invalid Id" });
     });
-
+    if (grocery.user.toString() !== req.user._id.toString()) {
+      res.status(401).json({ error: "you can not perform this action" });
+    }
     if (!grocery) {
       res.status(404).json({ error: "grocery not found" });
     }
@@ -87,7 +94,9 @@ const deleteGrocery = asyncHandler(async (req, res) => {
       console.error("Error finding grocery by ID:", error);
       res.status(404).json({ error: "Invalid Id" });
     });
-
+    if (grocery.user.toString() !== req.user._id.toString()) {
+      res.status(401).json({ error: "you can not perform this action" });
+    }
     const deletedGrocery = await Inventory.deleteOne({ _id: req.params.id });
     console.log("idsss-->", deletedGrocery);
 

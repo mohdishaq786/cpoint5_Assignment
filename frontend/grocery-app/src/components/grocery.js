@@ -42,10 +42,12 @@ class Grocery extends React.Component {
   //api calls from ui using superagent
   //GET CALL
   loadGroceries = () => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     this.setState({ isLoading: true });
     request
       .get(url + "/grocery")
       .set("Content-Type", "application/json")
+      .set("Authorization", `Bearer ${userInfo.token}`)
       .then((response) => {
         if (response.status === 200) {
           this.setState({ groceries: response.body, isLoading: false });
@@ -65,11 +67,15 @@ class Grocery extends React.Component {
   //post call
   handleAddItem = (e) => {
     e.preventDefault();
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    console.log(userInfo.token, "userInfo--->>>>");
+
     const { name, quantity, unit } = this.state;
     this.setState({ isLoading: true });
     request
       .post(url + "/grocery/addGrocery")
       .set("Content-Type", "application/json")
+      .set("Authorization", `Bearer ${userInfo.token}`)
       .send({ name, quantity, unit })
       .then((response) => {
         if (response.body.error) {
@@ -91,11 +97,14 @@ class Grocery extends React.Component {
   //update call
   handleUpdateItem = (e) => {
     e.preventDefault();
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const { _id, name, quantity, unit } = this.state;
     this.setState({ isLoading: true });
     request
       .put(url + `/grocery/${_id}`)
       .set("Content-Type", "application/json")
+      .set("Authorization", `Bearer ${userInfo.token}`)
+
       .send({ name, quantity, unit })
       .then((response) => {
         if (response.body.error) {
@@ -116,10 +125,13 @@ class Grocery extends React.Component {
   };
   //delet calll
   handleDeleteItem = (idToDelete) => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
     this.setState({ isLoading: true });
     request
       .delete(url + `/grocery/${idToDelete}`)
       .set("Content-Type", "application/json")
+      .set("Authorization", `Bearer ${userInfo.token}`)
       .then((response) => {
         if (response.body.error) {
           toast.error(response.body.error);
@@ -240,14 +252,35 @@ class Grocery extends React.Component {
     );
   }
 
+  handleLogout = () => {
+    localStorage.removeItem("userInfo"); // Remove user info from localStorage
+    window.location.href = "/"; // Redirect to lsnding page
+  };
   render() {
     const { search, groceries, isLoading } = this.state;
-    debugger;
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     // const filteredGroceries = this.state.groceries.filter((item) =>
     //   item?.name?.toLowerCase().includes(search.toLowerCase())
     // );
     return (
       <Container>
+        <div
+          className="d-flex justify-content-end align-items-center"
+          style={{ marginBottom: 20 }}
+        >
+          {userInfo && (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div>Welcome, {userInfo.name}</div>
+              <Button
+                variant="secondary"
+                onClick={this.handleLogout}
+                style={{ marginLeft: 15 }}
+              >
+                Logout
+              </Button>{" "}
+            </div>
+          )}
+        </div>
         <div
           className="text-center"
           style={{
